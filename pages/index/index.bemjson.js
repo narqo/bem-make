@@ -1,5 +1,5 @@
 ({
-    block: 'page'
+    block: 'page',
     content: [
         {
             block: 'headline',
