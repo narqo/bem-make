@@ -3,15 +3,15 @@ bem-make
 
 _Just for fun_
 
-== Synopsis
+## Synopsis
 
 An attempt for creation of simple but powerfull build-platform for a common
-(http://github.com/bem)[BEM] project.
+[BEM](http://github.com/bem) project.
 
 The core of the platform is simple (well, no so, actually) GNUmakefile, which is
-a set of just (http://github.com/bem/bem-tools)[bem-tools] command calls.
+a set of just [bem-tools](http://github.com/bem/bem-tools) command calls.
 
-== Consept of usage
+## Consept of usage
 
     $ make
 
