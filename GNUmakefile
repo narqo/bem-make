@@ -3,7 +3,7 @@ export PRJ_ROOT = $(shell pwd)
 BEM ?= bem
 
 pg_prefix ?= pages/
-pg_tech_suffixes ?= html css ie.css js
+pg_techs ?= html css ie.css js
 
 pg_src_tech ?= bemjson.js
 
@@ -30,7 +30,9 @@ all: $(pages)
 	@echo All done
 
 .PHONY: $(pages)
-$(pages): ; @echo $@; $(MAKE) $(foreach s, $(pg_tech_suffixes), $(addsuffix .$(s), $@$(shell basename $@)))
+$(pages):
+	@echo Building $@; \
+		$(MAKE) $(foreach suffix, $(pg_techs), $(addsuffix .$(suffix), $@$(shell basename $@)))
 
 .jdepend: build_output_flags = -o $(dir $(decl)) -n $(notdir $(decl:%.deps.js=%))
 .jdepend: cmd = $(build) -d $(decl) -t tools/techs/d.js
@@ -42,6 +44,8 @@ $(pages): ; @echo $@; $(MAKE) $(foreach s, $(pg_tech_suffixes), $(addsuffix .$(s
 
 
 # bem tools rules
+
+# FIXME: `make -B` will try to rebuild targets from `.d` files
 
 %.html: %.bemhtml.js
 	@echo === $@
