@@ -32,45 +32,45 @@ all: $(pages)
 .PHONY: $(pages)
 $(pages): ; @echo $@; $(MAKE) $(foreach s, $(pg_tech_suffixes), $(addsuffix .$(s), $@$(shell basename $@)))
 
-#.PHONY: .depend
-#.depend: ; build_output_flags = -o $(output) -n $(name); cmd = $(build) -d $(decl) -t tools/techs/d.js;
-#.depend: $(pages)
-#	$(foreach decl, $(addsuffix $(shell basename $<).deps.js, $<), $(cmd))
+.jdepend: build_output_flags = -o $(dir $(decl)) -n $(notdir $(decl:%.deps.js=%))
+.jdepend: cmd = $(build) -d $(decl) -t tools/techs/d.js
+.jdepend:
+	$(foreach decl, $(src:$(pg_src_tech)=deps.js), $(cmd))
+
 
 -include $(src:%.bemjson.js=%.d)
 
 
 # bem tools rules
 
-$(pg_prefix)%.html: $(pg_prefix)%.bemhtml.js
+%.html: %.bemhtml.js
 	@echo === $@
 
-$(pg_prefix)%.bemhtml.js: $(pg_prefix)%.deps.js
+%.bemhtml.js: %.deps.js
 	@echo === Building $< - $@
 
-.PRECIOUS: $(pg_prefix)%.deps.js
-$(pg_prefix)%.deps.js: $(pg_prefix)%.bemdecl.js
+.PRECIOUS: %.deps.js
+%.deps.js: %.bemdecl.js
 	$(build) -d $< -t deps.js
 	$(build) -d $@ -t tools/techs/d.js
 
-$(pg_prefix)%.bemdecl.js: $(pg_prefix)%.bemjson.js; $(create) -t bemdecl.js
+%.bemdecl.js: %.bemjson.js; $(create) -t bemdecl.js
 
-$(pg_prefix)%.css: $(pg_prefix)%.deps.js; $(build) -d $< -t css
+%.css: %.deps.js; $(build) -d $< -t css
 
-$(pg_prefix)%.ie.css: $(pg_prefix)%.deps.js; $(build) -d $< -t ie.css
+%.ie.css: %.deps.js; $(build) -d $< -t ie.css
 
-$(pg_prefix)%.js: $(pg_prefix)%.deps.js; $(build) -d $< -t js
+%.js: %.deps.js; $(build) -d $< -t js
 
-#$(pg_prefix)%.d: $(addprefix $(pg_prefix)%.,deps.js js css)
+#%.d: $(addprefix %.,deps.js js css)
 #	rm -f $@; \
 #	$(build) -d $< -t tools/techs/d.js
 
 
-# XXX: filter-out sub dirs
 clean:
-	-@ $(RM) -rf $(filter-out %.$(pg_src_tech), $(wildcard $(pg_prefix)*/*))
+	-@ $(RM) -f $(filter-out %.$(pg_src_tech), $(wildcard $(src:%.$(pg_src_tech)=%.*)))
 
-.PHONY: all clean
+.PHONY: all clean .jdepend
 
 .SECONDARY: %.css %.js
 
